@@ -10,6 +10,8 @@
 
 Kollie is a tool for herding your ephemeral test environments on Kubernetes; through deploying and managing test environments deployed using Flux and Helm.
 
+It has its origins as an internal developer tool at Tails.com. We are working on making it useful for a wider audience, but please bear with us while we do things like write documentation, build a Helm Chart and remove hardcoded values.
+
 ## Deployment guide
 
 Kollie currently makes quite a few assumptions about your environment and your Flux repository structure. Here is a list of the large ones:
