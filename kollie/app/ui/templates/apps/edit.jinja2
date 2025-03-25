@@ -1,0 +1,22 @@
+{% extends "base.jinja2" %}
+
+{% block title %}
+Edit {{app_name}}
+{% endblock title %}
+
+{% block content %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title">Edit {{app.name}}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ relative_url_for('app_save', env_name=env_name, app_name=app.name) }}">
+            <div class="mb-3">
+                <label for="image_tag_prefix" class="form-label">Image Tag Prefix</label>
+                <input type="text" class="form-control" id="image_tag_prefix" name="image_tag_prefix" value="{{app.image_tag_prefix}}">
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline-success">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,6 @@
+{
+    "aws_account": "1234",
+    "ecr_mirror": "5678",
+    "stage": "testing",
+    "zone_name": "testenvs.example.com"
+}

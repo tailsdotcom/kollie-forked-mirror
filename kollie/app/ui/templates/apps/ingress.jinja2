@@ -1,0 +1,16 @@
+<div class="card mt-4">
+    <div class="card-header">
+        URLs
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <ul>
+                {% for url in urls %}
+                <li>
+                    <a href="{{ url }}">{{ url }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

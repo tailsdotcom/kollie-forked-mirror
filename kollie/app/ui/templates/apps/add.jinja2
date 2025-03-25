@@ -1,0 +1,35 @@
+{% extends "base.jinja2" %}
+
+{% block title %}
+{{environment.name}}
+{% endblock title %}
+
+{% block content %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title">Edit {{environment.name}}</h5>
+    </div>
+    <div class="card-body">
+        <form action="{{ relative_url_for('add_app_to_env', env_name=environment.name) }}" method="post"
+            class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="app_name" class="form-label">App Name</label>
+                <select name="app_name" class="form-select" required>
+                    <option value="">Select an app</option>
+                    {% for app in available_apps %}
+                    <option value="{{ app }}">{{ app }}</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">
+                    Please select an app.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="image_tag_prefix" class="form-label">Image Tag Prefix</label>
+                <input type="text" name="image_tag_prefix" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline-success">Add to Environment</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

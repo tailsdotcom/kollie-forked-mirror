@@ -1,0 +1,39 @@
+{% extends "base.jinja2" %}
+
+{% block title %}
+{{app_name}}
+{% endblock title %}
+
+{% block content %}
+<div class="p-2">
+    <h5 class="card-title">{{app.name}} - <span class="badge bg-info">{{env_name}}</span></h5>
+</div>
+<div class="card mt-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <div class="p-2">
+                Config
+            </div>
+            <div class="p-2">
+                <form method="get" action="{{ relative_url_for('app_edit', env_name=env_name, app_name=app.name) }}">
+                    <input class="btn btn-sm btn-outline-warning" type="submit" value="Edit">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <p><strong>Image Tag Prefix:</strong> {{app.image_tag_prefix}}</p>
+        </div>
+    </div>
+</div>
+
+{% include '/apps/events.jinja2' %}
+
+{% for resource in resources %}
+<div class="mb-4">
+    {{ resource | safe}}
+</div>
+{% endfor %}
+
+{% endblock content %}

@@ -1,0 +1,54 @@
+{% extends "base.jinja2" %}
+
+{% block title %}
+Kollie environments
+{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col mt-3">
+        <h5 class="card-title float-start">Environments</h5>
+        <a class="btn btn-dark float-end" href="{{relative_url_for('create_environment')}}"><i
+                class="bi bi-folder-plus"></i> Create new environment</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col mt-2">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for environment in environments %}
+                <tr>
+                    <td>
+                        <a href="{{ relative_url_for('env_detail', testenv_name=environment.name) }}">{{
+                            environment.name }}</a>
+                        <span class="badge bg-secondary">{{ environment.owner_email }}</span>
+                        {% if environment.owner_email == userinfo.email %}
+                        ❤
+                        {% endif %}
+                    </td>
+                    <td>{{ environment.created_at | humanise }}</td>
+                    <td>
+                        <form method="post"
+                            action="{{ relative_url_for('delete_environment', testenv_name=environment.name) }}">
+                            <input class="btn btn-sm btn-outline-danger" type="submit" value="Delete">
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">No running environments</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

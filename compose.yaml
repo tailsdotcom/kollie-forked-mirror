@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+      target: devcontainer
+    container_name: kollie
+    volumes:
+      - ./:/app/
+      - $HOME/.kube/config:/kube/config
+    environment:
+      PORT: 8000
+      MODULE_NAME: kollie.app.main
+      KUBECONFIG: /kube/config
+      APPLICATION_STAGE: local
+      KOLLIE_NAMESPACE: "kollie"
+    env_file:
+      - ./current_user.env
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    command:
+      [
+        "uvicorn",
+        "--factory",
+        "kollie.app.main:create_app",
+        "--host=0.0.0.0",
+        "--port=8000",
+        "--reload",
+      ]
+    restart: "no"
