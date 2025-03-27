@@ -16,7 +16,7 @@ It has its origins as an internal developer tool at Tails.com. We are working on
 
 Kollie currently makes quite a few assumptions about your environment and your Flux repository structure. Here is a list of the large ones:
 * Your Flux GitRepository resources are all located in the `flux-system` namespace
-* Each of your applications has a `ImageRepository` resource on your cluster to allow tracking of new container images
+* Each of your applications has a `ImageRepository` resource on your cluster to allow tracking of new container images. It will need its `accessFrom` attribute configured to allow access from the `kollie` namespace.
 * The container images are tagged in the format `<branch name>-<git commit id>-<unix timestamp>`
 * The ownership attribution of environments relies on `x-auth-request-email` and `x-auth-request-user` headers being sent in requests from something like oauth2-proxy
 * There are a number of configuration environment variables and config files which Kollie needs to run. These will be defined in the Helm Chart.
