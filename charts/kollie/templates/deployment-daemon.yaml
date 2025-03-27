@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kollie.fullname" . }}-daemon
+  labels:
+    {{- include "kollie.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kollie-daemon
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kollie.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: kollie-daemon
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kollie.labels" . | nindent 8 }}
+        app.kubernetes.io/component: kollie-daemon
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kollie.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python3", "/app/kollie/app/cli/bin.py", "reconcile", "--heartbeat"]
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - 'test $(($(date +%s) - $(stat -c "%Y" /tmp/alive.txt))) -lt 120'
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- with .Values.daemon.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /config/kollie
+              name: configmap
+              readOnly: true
+          env:
+            - name: APPLICATION_STAGE
+              value: production
+            - name: KOLLIE_APP_TEMPLATE_JSON_PATH
+              value: /config/kollie/app_templates.json
+            - name: KOLLIE_APP_BUNDLE_JSON_PATH
+              value: /config/kollie/app_bundles.json
+            - name: KOLLIE_COMMON_SUBSTITUTIONS_JSON_PATH
+              value: /config/kollie/common_substitutions.json
+            - name: KOLLIE_EXTENDED_LEASE_TEST_ENV_NAMES
+              value: {{ .Values.config.extendedLeaseTestEnvNames | quote }}
+            - name: KOLLIE_LEASE_EXCLUSION_LIST
+              value: {{ .Values.config.leaseExclusionList | quote }}
+            - name: KOLLIE_DEFAULT_FLUX_REPOSITORY
+              value: {{ .Values.config.defaultFluxRepository | quote }}
+      volumes:
+        - emptyDir: {}
+          name: tmp
+        - configMap:
+            defaultMode: 420
+            name: {{ include "kollie.fullname" . }}
+          name: configmap
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
