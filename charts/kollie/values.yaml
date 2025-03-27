@@ -39,20 +39,20 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext:
+  fsGroup: 10001
+  runAsGroup: 10001
+  runAsNonRoot: true
+  runAsUser: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
       - ALL
   readOnlyRootFilesystem: true
   runAsGroup: 10001
-  runAsUser: 10001
-  seccompProfile:
-    type: RuntimeDefault
-
-securityContext:
-  fsGroup: 10001
-  runAsGroup: 10001
-  runAsNonRoot: true
   runAsUser: 10001
   seccompProfile:
     type: RuntimeDefault
