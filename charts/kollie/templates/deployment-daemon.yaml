@@ -6,7 +6,7 @@ metadata:
     {{- include "kollie.labels" . | nindent 4 }}
     app.kubernetes.io/component: kollie-daemon
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "kollie.selectorLabels" . | nindent 6 }}
@@ -67,6 +67,8 @@ spec:
           env:
             - name: APPLICATION_STAGE
               value: production
+            - name: KOLLIE_NAMESPACE
+              value: {{ .Release.Namespace | quote }}
             - name: KOLLIE_APP_TEMPLATE_JSON_PATH
               value: /config/kollie/app_templates.json
             - name: KOLLIE_APP_BUNDLE_JSON_PATH
