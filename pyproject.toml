@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = [
     "Dinesh Vitharanage <d@dnsh.io>",
-    "Sam Weston <sam.weston@tails.com>",
+    "Sam Weston <sam@cablespaghetti.dev>",
 ]
 readme = "README.md"
 
