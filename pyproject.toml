@@ -2,19 +2,22 @@
 name = "kollie"
 version = "0.1.0"
 description = ""
-authors = ["Dinesh Vitharanage <dinesh@tails.com>", "Sam Weston <sam.weston@tails.com>"]
+authors = [
+    "Dinesh Vitharanage <d@dnsh.io>",
+    "Sam Weston <sam@cablespaghetti.dev>",
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-uvicorn = {extras = ["standard"], version = "*"}
+uvicorn = { extras = ["standard"], version = "*" }
 kubernetes = "*"
 fastapi = "*"
 pydantic = "*"
 python-multipart = "*"
 jinja2 = "*"
 httpx = "*"
-typer = {extras = ["all"], version = "*"}
+typer = { extras = ["all"], version = "*" }
 structlog = "*"
 freezegun = "*"
 arrow = "*"
