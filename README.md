@@ -10,30 +10,15 @@
 
 Kollie is a tool for herding your ephemeral test environments on Kubernetes; through deploying and managing test environments deployed using Flux and Helm.
 
-It has its origins as an internal developer tool at Tails.com. We are working on making it useful for a wider audience, but please bear with us while we do things like write documentation, build a Helm Chart and remove hardcoded values.
+It has its origins as an internal developer tool at Tails.com. We are working on making it useful for a wider audience, but please bear with us while we do things like write better documentation and provide example resources.
 
-## Deployment guide
+## Why should you use it?
 
-Kollie currently makes quite a few assumptions about your environment and your Flux repository structure. Here is a list of the large ones:
-* Your Flux GitRepository resources are all located in the `flux-system` namespace
-* Each of your applications has a `ImageRepository` resource on your cluster to allow tracking of new container images. It will need its `accessFrom` attribute configured to allow access from the `kollie` namespace.
-* The container images are tagged in the format `<branch name>-<git commit id>-<unix timestamp>`
-* The ownership attribution of environments relies on `x-auth-request-email` and `x-auth-request-user` headers being sent in requests from something like oauth2-proxy
-* There are a number of configuration environment variables and config files which Kollie needs to run. These will be defined in the Helm Chart.
-* All Kustomizations created by Kollie have an `environment` and a `downscaler_uptime` [substitution](https://fluxcd.io/flux/components/kustomize/kustomizations/#post-build-variable-substitution). The first just contains the environment name, the second provides a time window for when the environment should _not_ be scaled to 0. More in the [Downscaling](#downscaling) section.
-* Kustomization labels and annotations are hardcoded to Tails.com conventions
+The Flux project has fairly recently released the Flux Operator and with it, [the concept of `ResourceSets`](https://fluxcd.control-plane.io/operator/resourcesets/github-pull-requests/). This provides another way to set up ephemeral test environments with Flux. However when managing environments consisting of multiple applications (such as micro-services) from multiple Git repositories it might not fit your needs.
 
-In addition the following features still have hardcoding, preventing them from working outside of Tails.com (PRs welcome to fix):
-* Custom GitRepository Kubernetes resource creation to allow tracking of a non-default branch
+Kollie uses the core `Kustomization` concept within Flux to deploy multiple applications to easily create an environment. These apps might mostly be playing a supporting role in the test environment and be running the stable production or staging version, with only a couple on versions pushed from feature branches. For our needs, we found this approach, combined with an easy to use web-ui provided more flexibility for our developers.
 
-
-## Developer guide
-
-Welcome to the Kollie developer guide. This guide is intended for developers looking to contribute to the Kollie project. Due to the nature of the project, we assume that you are comfortable with reading and understanding technical documentation for a Python project as well as having at least some basic knowledge around Kubernetes, Flux and Helm.
-
-This guide describes the core concepts of Kollie and how to get your local environment set up for development.
-
-### Core concepts
+## Core concepts
 
 The core idea of Kollie is to piggyback on a design feature of Flux. Flux is a popular tool for deploying applications to Kubernetes clusters. It works by reading a set of Kubernetes manifests from a Git repository and applying them to the cluster.
 
@@ -47,39 +32,20 @@ The following diagram illustrates that concept.
 
 Don't worry if that description of how Kollie works left your head spinning. Most of the magic happens within Flux. Kollie is just a simple tool that creates YAML files inside Kubernetes clusters! That means you can contribute to this project even if you are new to the world of Kubernetes and infrastructure and learn about those technologies along the way!
 
-Read on to see how you can get started by setting up your local environment for development.
+## Deployment guide
 
-### Setting up local environment
+Kollie currently makes quite a few assumptions about your environment and your Flux repository structure. Here is a list of the large ones:
+* Your Flux GitRepository resources are all located in the `flux-system` namespace
+* Each of your applications has a `ImageRepository` resource on your cluster to allow tracking of new container images. It will need its `accessFrom` attribute configured to allow access from the `kollie` namespace.
+* The container images are tagged in the format `<branch name>-<git commit id>-<unix timestamp>`
+* The ownership attribution of environments relies on `x-auth-request-email` and `x-auth-request-user` headers being sent in requests from something like oauth2-proxy
+* All Kustomizations created by Kollie have an `environment` and a `downscaler_uptime` [substitution](https://fluxcd.io/flux/components/kustomize/kustomizations/#post-build-variable-substitution). The first just contains the environment name, the second provides a time window for when the environment should _not_ be scaled to 0. More in the [Downscaling](#downscaling) section.
+* Kustomization labels and annotations are hardcoded to Tails.com conventions
 
-The included docker + docker-compose setup makes it quick and easy to get started with Kollie. Follow the instructions below:
+In addition the following features still have hardcoding, preventing them from working outside of Tails.com (PRs welcome to fix):
+* Custom GitRepository Kubernetes resource creation to allow tracking of a non-default branch
 
-To get started with Kollie, you'll need to set up a local development environment.
-
-#### Cloning the project
-
-The first step is to clone the Kollie project from GitHub. You can do this by running the following command:
-
-```
-git clone git@github.com:kollie-org/kollie.git
-```
-
-#### Building the project
-
-Once you have cloned the project, you can build it using the `make build` command. This will build the Docker image for the Kollie application.
-
-If it's your first time building the project, you will need to run `make setup-secrets` before running the application. This attempts to populate a `current_user.env` file for auth purposes when working in your local env. If your local git config uses something other than your email address you will need to correct the value stored against the `X_AUTH_REQUEST_EMAIL` key.
-
-#### Running the application
-
-To run the Kollie application, you can use the `make run` command. This will start the Kollie application in a Docker container.
-
-#### Testing the application
-
-To test the Kollie application, you can use the `make test` command. This will run the unit tests for the Kollie application.
-
-### Coding Style and linting
-- We use [Black formatter](https://github.com/psf/black). Please make sure your code is formatted using Black or else the CI steps will fail.
-- We check for PEP8 and Pyflakes using [Ruff linter](https://github.com/astral-sh/ruff)
+All that said, you can easily deploy Kollie to your cluster using our [Helm Chart](/charts/kollie/README.md).
 
 ## Debugging guide
 
@@ -94,3 +60,8 @@ If the `Kustomization` and `ImagePolicy` are fine, it is worth looking at the re
 Kollie is designed to be compatible with https://github.com/caas-team/GoKubeDownscaler . One of the Post Build Substitutions provided to the Kustomization resource by default is an uptime window, which can be fed into the namespace annotation required by that controller. When an environment is created it will always have an uptime window until 7pm that day (UTC). It is possible to extend this window from the web interface for that environment if the test environment is needed by the user/developer for longer (or on another subsequent day).
 
 There is also the concept of a lease_exclusion_window for environments you want to run all the time, during a specific window. If an environment name is specified in the `KOLLIE_LEASE_EXCLUSION_LIST` environment variable then the uptime window will always be configured as the hardcoded (for now) value of `Mon-Fri 07:00-19:00 Europe/London`.
+
+
+## Contributing
+
+Please read [CONTRIBUTING.md](/CONTRIBUTING.md) for details of how to set up a local development environment and how to contribute to the project.
