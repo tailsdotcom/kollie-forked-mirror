@@ -12,6 +12,8 @@ Kollie is a tool for herding your ephemeral test environments on Kubernetes; thr
 
 It has its origins as an internal developer tool at Tails.com. We are working on making it useful for a wider audience, but please bear with us while we do things like write better documentation and provide example resources.
 
+![A screenshot of the environment screen showing four apps, one with an experimental branch and three running the staging version.](screenshot.png)
+
 ## Why should you use it?
 
 The Flux project has fairly recently released the Flux Operator and with it, [the concept of `ResourceSets`](https://fluxcd.control-plane.io/operator/resourcesets/github-pull-requests/). This provides another way to set up ephemeral test environments with Flux. However when managing environments consisting of multiple applications (such as micro-services) from multiple Git repositories it might not fit your needs.
