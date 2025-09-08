@@ -41,6 +41,8 @@ jobs:
         uses: azure/setup-helm@v4
       - name: Install kubeconform
         run: |
+          curl --version
+          jq --version
           version=$(curl -sL https://api.github.com/repos/yannh/kubeconform/releases/latest | jq -r ".tag_name")
           echo "Downloading version ${version}"
           curl -OL https://github.com/yannh/kubeconform/releases/download/${version}/kubeconform-linux-amd64.tar.gz
