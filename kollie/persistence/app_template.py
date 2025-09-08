@@ -35,7 +35,7 @@ class AppTemplate:
         return cls(
             app_name=data["app_name"],
             label=data["label"],
-            git_repository_name=data.get("git_repository_name", DEFAULT_FLUX_REPOSITORY),
+            git_repository_name=data.get("git_repository_name", DEFAULT_FLUX_REPOSITORY or ""),
             git_repository_path=data["git_repository_path"],
             image_repository_ref=image_repository_ref,
             default_image_tag_prefix=data["default_image_tag_prefix"],
