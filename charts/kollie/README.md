@@ -3,7 +3,7 @@
 This chart is pushed to GHCR as an OCI artifact. You can use in Flux like this:
 
 ```
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: kollie
@@ -15,7 +15,7 @@ spec:
     operation: copy
   url: oci://ghcr.io/kollie-org/charts/kollie
   ref:
-    tag: "0.0.1"
+    tag: "0.1.0"
 ```
 
 An example Helm Release of Kollie might look something like this:
